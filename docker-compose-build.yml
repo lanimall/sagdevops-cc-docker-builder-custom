@@ -1,0 +1,46 @@
+version: "3"
+
+networks:
+  sagdevops:
+
+services:
+  cce_builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.builder
+      args:
+        REPO_USR: ${REPO_USR}
+        REPO_PWD: ${REPO_PWD}
+        CC_BASE_ENV: empower
+    image: softwareag/custom/commandcentral:10.1.0.1-builder
+    networks:
+      - sagdevops
+    ports:
+      - "8090:8090"
+      - "8091:8091"
+
+  cce_server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+      args:
+        REPO_USR: ${REPO_USR}
+        REPO_PWD: ${REPO_PWD}
+        CC_BASE_ENV: empower
+    image: softwareag/custom/commandcentral:10.1.0.1-server
+    networks:
+      - sagdevops
+    ports:
+      - "8090:8090"
+      - "8091:8091"
+
+  cce_cli:
+    build:
+      context: .
+      dockerfile: Dockerfile.cli
+    image: softwareag/custom/commandcentral:10.1.0.1-cli
+    networks:
+      - sagdevops
+    ports:
+      - "8090:8090"
+      - "8091:8091"

@@ -1,0 +1,29 @@
+version: "3"
+
+networks:
+  sagdevops:
+
+services:
+  cce:
+    image: store/softwareag/commandcentral:10.1.0.1-server
+    networks:
+      - sagdevops
+    ports:
+      - "8090:8090"
+      - "8091:8091"
+
+  setup:
+    image: softwareag/commandcentral:10.1-cli-latest
+    environment:
+      - REPO_USR
+      - REPO_PWD
+      - CC_CLIENT=test
+      - CC_BASE_ENV=empower
+
+    volumes:
+      - ./:/src
+    networks:
+      - sagdevops
+    command: sagccant setup_nostart -Dcc=test -D
+    depends_on:
+      - cce
