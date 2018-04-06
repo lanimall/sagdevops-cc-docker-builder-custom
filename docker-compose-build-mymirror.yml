@@ -11,8 +11,8 @@ services:
       args:
         REPO_USR: ${REPO_USR}
         REPO_PWD: ${REPO_PWD}
-        CC_BASE_ENV: empower
-    image: softwareag/custom/commandcentral:10.1.0.1-builder
+        CC_BASE_ENV: mymirror
+    image: softwareag/custom/commandcentral/custom-mymirror:10.1.0.1-builder
     networks:
       - sagdevops
     ports:
@@ -26,8 +26,8 @@ services:
       args:
         REPO_USR: ${REPO_USR}
         REPO_PWD: ${REPO_PWD}
-        CC_BASE_ENV: empower
-    image: softwareag/custom/commandcentral:10.1.0.1-server
+        CC_BASE_ENV: mymirror
+    image: softwareag/commandcentral/custom-mymirror:10.1.0.1-server
     networks:
       - sagdevops
     ports:
