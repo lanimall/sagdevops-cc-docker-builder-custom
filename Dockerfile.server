@@ -1,5 +1,5 @@
 # base Command Central server image
-FROM store/softwareag/commandcentral:10.1.0.1-server
+FROM store/softwareag/commandcentral:10.1.0.1-server as builder
 
 ADD . /src
 WORKDIR /src
@@ -8,15 +8,49 @@ WORKDIR /src
 ARG REPO_USR
 ARG REPO_PWD
 ARG CC_BASE_ENV
+ARG MIRROR_HOST_ENTRY
 
 ENV SAG_HOME=/opt/softwareag
 ENV CC_BASE_ENV=$CC_BASE_ENV
 ENV REPO_USR=$REPO_USR
 ENV REPO_PWD=$REPO_PWD
 
-# start tooling, apply template(s), cleanup
-RUN echo $REPO_USR && sagccant setup stopcc -Dbuild.dir=/tmp && \
-    cd $SAG_HOME && rm -fr /tmp/* common/conf/nodeId.txt profiles/SPM/logs/* profiles/CCE/logs/* && \
-    rm -fr /src/*
+#RUN yum install -y telnet
+#RUN /bin/bash -c "echo '172.30.1.66 mycce.internal.com cc.devops.tests' >> /etc/hosts"
+#RUN telnet mycce.internal.com 8092
 
-ENTRYPOINT ["/bin/bash", “-c”, "/opt/softwareag/cce-entrypoint.sh"]
+# start tooling, apply template(s), cleanup
+RUN sagccant setup stopcc -Dbuild.dir=/tmp && \
+    cd $SAG_HOME && rm -fr /tmp/* common/conf/nodeId.txt profiles/SPM/logs/* profiles/CCE/logs/*
+
+# Set path to the main executable folder
+ENV PATH=$PATH:$SAG_HOME
+
+ENTRYPOINT ["cce-entrypoint.sh"]
+
+############################################################
+#FROM store/softwareag/commandcentral:10.1.0.1-server
+
+# custom ehCache to replace all cacheWriters with cache persistance
+#COPY --from=builder $SAG_HOME/ehCache.xml $SAG_HOME/profiles/CCE/configuration/
+
+### User data
+#COPY --from=builder $SAG_HOME/profiles/CCE $SAG_HOME/profiles/CCE
+
+### Mirror repos
+#COPY --from=builder $SAG_HOME/profiles/SPM/configuration $SAG_HOME/profiles/SPM/configuration
+
+### logs
+#VOLUME $SAG_HOME/profiles/CCE/logs
+#VOLUME $SAG_HOME/profiles/SPM/logs
+
+### Dynamic config
+#COPY --from=builder $SAG_HOME/profiles/CCE/configuration/com.softwareag.platform.config.propsloader/ $SAG_HOME/profiles/CCE/configuration/com.softwareag.platform.config.propsloader/
+#COPY --from=builder $SAG_HOME/profiles/SPM/configuration/com.softwareag.platform.config.propsloader/ $SAG_HOME/profiles/SPM/configuration/com.softwareag.platform.config.propsloader/
+
+# Set path to the main executable folder
+#ENV PATH=$PATH:$SAG_HOME
+
+#VOLUME /src
+#WORKDIR /src
+#ENTRYPOINT ["cce-entrypoint.sh"]

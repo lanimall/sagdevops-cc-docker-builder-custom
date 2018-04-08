@@ -22,4 +22,7 @@ RUN sagccant setup stopcc -Dbuild.dir=/tmp && \
 ONBUILD ADD . /src
 ONBUILD RUN $SAG_HOME/profiles/SPM/bin/provision.sh
 
-ENTRYPOINT ["/bin/bash", “-c”, "/opt/softwareag/cce-entrypoint.sh"]
+# Set path to the main executable folder
+ENV PATH=$PATH:$SAG_HOME
+
+ENTRYPOINT ["cce-entrypoint.sh"]

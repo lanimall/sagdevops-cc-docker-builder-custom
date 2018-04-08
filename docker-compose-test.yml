@@ -13,17 +13,16 @@ services:
       - "8091:8091"
 
   setup:
-    image: softwareag/commandcentral:10.1-cli-latest
+    image: softwareag/commandcentral/custom:10.1.0.1-cli
     environment:
       - REPO_USR
       - REPO_PWD
       - CC_CLIENT=test
-      - CC_BASE_ENV=empower
-
+      - CC_BASE_ENV=mymirror
     volumes:
       - ./:/src
     networks:
       - sagdevops
-    command: sagccant setup_nostart -Dcc=test -D
+    command: sagccant setup_nostart
     depends_on:
       - cce

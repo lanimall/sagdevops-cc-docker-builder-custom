@@ -33,7 +33,7 @@ environments:
     timeout.status.runtime.seconds: 2400
 
     # enable/disable fix installation dependencies validation (true/false)
-    fix.dependencies.validation: true
+    fix.dependencies.validation: false
 
     # list of SPM nodes/hosts to configure
     spm.hosts: [local]
