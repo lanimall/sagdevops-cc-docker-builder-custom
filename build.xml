@@ -32,13 +32,13 @@
         <copy file="${default.base.env.properties}" tofile="environments/runtime.properties" overwrite="true" if:set="default.base.env.properties.exists"/>
     </target>
 
-    <target name="setup" depends="startcc,setup_nostart" />
+    <target name="setup" depends="waitcc,tuneup,masters,licenses" />
 
     <!--<target name="setup">-->
         <!--<echo>vars: ${env.REPO_USR} / ${env.REPO_PWD}</echo>-->
     <!--</target>-->
 
-    <target name="setup_nostart" depends="waitcc,tuneup,masters,licenses" />
+    <target name="setup_withstart" depends="startcc,setup" />
 
     <target name="tuneup" depends="waitcc,_localinit" description="Configure CC timeouts">
         <antcall target="apply">

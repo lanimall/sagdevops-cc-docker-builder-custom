@@ -1,5 +1,6 @@
 # base Command Central server image
-FROM store/softwareag/commandcentral:10.1.0.1-builder
+#FROM store/softwareag/commandcentral:10.1.0.1-builder
+FROM registry.docker.tests:5000/ccdevops/commandcentral:10.1-builder
 
 # build args
 ARG REPO_USR
@@ -15,7 +16,7 @@ ADD . /src
 WORKDIR /src
 
 # start tooling, apply template(s), cleanup
-RUN sagccant setup stopcc -Dbuild.dir=/tmp && \
+RUN sagccant setup_withstart stopcc -Dbuild.dir=/tmp && \
     cd $SAG_HOME && rm -fr /tmp/* common/conf/nodeId.txt profiles/SPM/logs/* profiles/CCE/logs/* && \
     rm -fr /src/*
 

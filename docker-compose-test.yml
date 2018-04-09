@@ -4,25 +4,50 @@ networks:
   sagdevops:
 
 services:
-  cce:
-    image: store/softwareag/commandcentral:10.1.0.1-server
+  cce_empower:
+    #image: store/softwareag/commandcentral:10.1.0.1-server ## from the store
+    image: registry.docker.tests:5000/ccdevops/commandcentral:10.1-server ## get latest from internal registry
     networks:
       - sagdevops
     ports:
       - "8090:8090"
       - "8091:8091"
 
-  setup:
-    image: softwareag/commandcentral/custom:10.1.0.1-cli
+  cce_mymirror:
+    #image: store/softwareag/commandcentral:10.1.0.1-server ## from the store
+    image: registry.docker.tests:5000/ccdevops/commandcentral:10.1-server ## get latest from internal registry
+    networks:
+      - sagdevops
+    ports:
+      - "9090:8090"
+      - "9091:8091"
+
+  setup_cce_empower:
+    image: registry.docker.tests:5000/ccdevops/commandcentral:10.1-client
     environment:
-      - REPO_USR
-      - REPO_PWD
-      - CC_CLIENT=test
+      - REPO_USR=$EMPOWER_USER
+      - REPO_PWD=$EMPOWER_PWD
+      - CC_CLIENT=test_empower
+      - CC_BASE_ENV=empower
+    volumes:
+      - ./:/src
+    networks:
+      - sagdevops
+    command: sagccant setup
+    depends_on:
+      - cce_empower
+
+  setup_cce_mymirror:
+    image: registry.docker.tests:5000/ccdevops/commandcentral:10.1-client
+    environment:
+      - REPO_USR=$MIRROR_USER
+      - REPO_PWD=$MIRROR_PWD
+      - CC_CLIENT=test_mymirror
       - CC_BASE_ENV=mymirror
     volumes:
       - ./:/src
     networks:
       - sagdevops
-    command: sagccant setup_nostart
+    command: sagccant setup
     depends_on:
-      - cce
+      - cce_mymirror

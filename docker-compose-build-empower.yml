@@ -9,10 +9,10 @@ services:
       context: .
       dockerfile: Dockerfile.builder
       args:
-        REPO_USR: ${REPO_USR}
-        REPO_PWD: ${REPO_PWD}
+        REPO_USR: ${EMPOWER_USER}
+        REPO_PWD: ${EMPOWER_PWD}
         CC_BASE_ENV: empower
-    image: softwareag/commandcentral/custom/empower:10.1.0.1-builder
+    image: softwareag/commandcentral/custom/empower:10.1-builder
     networks:
       - sagdevops
     ports:
@@ -24,23 +24,25 @@ services:
       context: .
       dockerfile: Dockerfile.server
       args:
-        REPO_USR: ${REPO_USR}
-        REPO_PWD: ${REPO_PWD}
+        REPO_USR: ${EMPOWER_USER}
+        REPO_PWD: ${EMPOWER_PWD}
         CC_BASE_ENV: empower
-    image: softwareag/commandcentral/custom/empower:10.1.0.1-server
+    image: softwareag/commandcentral/custom/empower:10.1-server
     networks:
       - sagdevops
     ports:
       - "8090:8090"
       - "8091:8091"
 
-  cce_cli:
-    build:
-      context: .
-      dockerfile: Dockerfile.cli
-    image: softwareag/commandcentral/custom:10.1.0.1-cli
+  cce_client:
+    image: registry.docker.tests:5000/ccdevops/commandcentral:10.1-client
+    networks:
+      - sagdevops
+
+  cce_node:
+    image: registry.docker.tests:5000/ccdevops/commandcentral:10.1-node
     networks:
       - sagdevops
     ports:
-      - "8090:8090"
-      - "8091:8091"
+      - "8092:8092"
+      - "8093:8093"
